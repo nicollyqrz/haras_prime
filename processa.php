@@ -1,16 +1,4 @@
 <?php
-/**
- * processa.php
- * Script principal para processamento de requisições GET e POST
- * 
- * Requisitos:
- * - Inclui o cabecalho.php obrigatoriamente
- * - Trata requisições GET para busca de cavalos
- * - Trata requisições POST para simulação de financiamento
- */
-
-// Inclui o cabeçalho HTML modular
-include 'cabecalho.php';
 
 // Função para redirecionar com segurança
 function redirectToIndex() {
