@@ -1,53 +1,37 @@
 <?php
-/**
- * processa.php
- * Script principal para processamento de requisições GET e POST
- * 
- * Requisitos:
- * - Inclui o cabecalho.php obrigatoriamente
- * - Trata requisições GET para busca de cavalos
- * - Trata requisições POST para simulação de financiamento
- */
 
-// Inclui o cabeçalho HTML modular
 include 'cabecalho.php';
 
-// Função para redirecionar com segurança
 function redirectToIndex() {
     header('Location: index.php');
     exit;
 }
 
-// Função para formatar valores monetários
 function formatMoney($value) {
     return 'R$ ' . number_format($value, 2, ',', '.');
 }
 
-// Função para verificar se o usuário é VIP
 function isVipCustomer($idade, $valor_cavalo) {
     return ($idade >= 18 && $valor_cavalo > 30000.00);
 }
 
-// Início do conteúdo principal
 echo '<div style="padding: 20px 0;">';
 
-// ============================================
-// PROCESSAMENTO DE REQUISIÇÕES GET
-// ============================================
+
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['txt_busca'])) {
     
     $termo_busca = trim($_GET['txt_busca']);
     
-    // Verifica se o termo de busca está vazio
+
     if (empty($termo_busca)) {
         echo '<div class="error">';
         echo '   <strong>⚠️ Erro:</strong> O campo de busca não pode estar vazio.';
         echo '   <br><a href="index.php" class="btn-back" style="margin-top:10px;">Voltar para o Início</a>';
         echo '</div>';
-        redirectToIndex(); // Redireciona após exibir mensagem
+        redirectToIndex(); 
     }
     
-    // Busca simulada no plantel (dados mock)
+    
     $plantel = [
         ['nome' => 'Trovão Negro', 'raca' => 'Quarto de Milha', 'idade' => 5, 'valor' => 45000.00],
         ['nome' => 'Estrela Dourada', 'raca' => 'Puro Sangue Inglês', 'idade' => 4, 'valor' => 68000.00],
@@ -58,13 +42,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['txt_busca'])) {
         ['nome' => 'Céu Azul', 'raca' => 'Árabe', 'idade' => 2, 'valor' => 25000.00],
     ];
     
-    // Filtra os cavalos que correspondem à busca
     $resultados = array_filter($plantel, function($cavalo) use ($termo_busca) {
         return stripos($cavalo['nome'], $termo_busca) !== false || 
                stripos($cavalo['raca'], $termo_busca) !== false;
     });
     
-    // Exibe os resultados
+    
     echo '<div class="result-box">';
     echo '   <h2>🔍 Resultados da Busca</h2>';
     echo '   <div class="info-item">';
@@ -113,9 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['txt_busca'])) {
     echo '</div>';
 }
 
-// ============================================
-// PROCESSAMENTO DE REQUISIÇÕES POST
-// ============================================
+
 elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nome_proponente'])) {
     
     // Captura as variáveis do formulário
@@ -124,7 +105,6 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nome_proponente']
     $valor_cavalo = floatval(str_replace(',', '.', $_POST['valor_cavalo']));
     $parcelas = intval($_POST['parcelas']);
     
-    // Validação dos dados
     if (empty($nome_proponente) || $idade_proponente <= 0 || $valor_cavalo <= 0) {
         echo '<div class="error">';
         echo '   <strong>⚠️ Erro:</strong> Todos os campos devem ser preenchidos corretamente.';
@@ -133,7 +113,7 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nome_proponente']
         redirectToIndex();
     }
     
-    // Cálculo do financiamento
+    
     $juros = 0;
     $taxa_descricao = '';
     
@@ -158,10 +138,9 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nome_proponente']
     $valor_total = $valor_cavalo * (1 + $juros);
     $valor_parcela = ($parcelas > 0) ? $valor_total / $parcelas : $valor_total;
     
-    // Verifica se o cliente é elegível para o Cupom VIP
     $elegivel_vip = isVipCustomer($idade_proponente, $valor_cavalo);
     
-    // Exibe os resultados
+    
     echo '<div class="result-box">';
     echo '   <h2>💰 Simulação de Financiamento</h2>';
     echo '   <div class="info-item">';
@@ -189,7 +168,7 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nome_proponente']
     echo '       <span class="value" style="font-weight: bold; color: #2b6cb0;">' . formatMoney($valor_parcela) . '</span>';
     echo '   </div>';
     
-    // Exibe o Cupom VIP se elegível
+    
     if ($elegivel_vip) {
         echo '<div class="vip-cupom">';
         echo '   🎉 <strong>Cupom VIP de R$ 1.000,00</strong> 🎉';
@@ -203,9 +182,7 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nome_proponente']
     echo '</div>';
 }
 
-// ============================================
-// REQUISIÇÃO INVÁLIDA
-// ============================================
+
 else {
     echo '<div class="error">';
     echo '   <strong>⚠️ Erro:</strong> Requisição inválida. Por favor, utilize os formulários disponíveis.';
@@ -215,7 +192,7 @@ else {
 
 echo '</div>';
 
-// Fecha o body e html (iniciado no cabecalho.php)
+
 ?>
 </body>
 </html>
